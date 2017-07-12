@@ -57,13 +57,13 @@ public class Percolation {
 		if (idx >= n && isOpen[idx-n]) {
 			uf.union(idx, idx-n);
 		}
-		if (idx < n*n-n && isOpen[idx+n]) {
+		if (idx < isOpen.length-n && isOpen[idx+n]) {
 			uf.union(idx, idx+n);
 		}
 		if (idx > 0 && isOpen[idx-1]) {
 			uf.union(idx, idx-1);
 		}
-		if (idx < n*n-1 && isOpen[idx+1]) {
+		if (idx < isOpen.length-1 && isOpen[idx+1]) {
 			uf.union(idx, idx+1);
 		}
 	}
