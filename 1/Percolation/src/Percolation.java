@@ -65,10 +65,10 @@ public class Percolation {
             uf.union(idx, lower);
         }
 
-        if (idx > 0 && isOpen[idx-1]) {
+        if (col > 1 && isOpen[idx-1]) {
             uf.union(idx, idx-1);
         }
-        if (idx < isOpen.length-1 && isOpen[idx+1]) {
+        if (col < n && isOpen[idx+1]) {
             uf.union(idx, idx+1);
         }
     }
