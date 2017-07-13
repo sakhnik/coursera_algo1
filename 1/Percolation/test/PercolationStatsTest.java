@@ -16,12 +16,12 @@ public class PercolationStatsTest {
 	@Test
 	public void test1() {
 		PercolationStats p = new PercolationStats(200, 100);
-		assertEquals(0.593, p.mean(), 0.01);
+		assertEquals(0.593, p.mean(), 0.005);
 	}
 
 	@Test
 	public void test2() {
 		PercolationStats p = new PercolationStats(2, 10000);
-		assertEquals(0.666, p.mean(), 0.15);
+		assertEquals(0.666, p.mean(), 0.05);
 	}
 }
