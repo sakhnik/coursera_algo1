@@ -29,14 +29,10 @@ public class Percolation {
         nOpen = 0;
 
         isOpen = new boolean[n*n];
-		for (int i = 0; i < isOpen.length; ++i)
-			isOpen[i] = false;
+        for (int i = 0; i < isOpen.length; ++i)
+            isOpen[i] = false;
 
         uf = new WeightedQuickUnionUF(n*n + 2);
-        for (int i = 0; i != n; ++i) {
-            uf.union(upper, i);
-            uf.union(n*n - i - 1, lower);
-        }
     }
 
     private int getIdx(int row, int col) {
@@ -54,12 +50,21 @@ public class Percolation {
         isOpen[idx] = true;
         ++nOpen;
 
-        if (idx >= n && isOpen[idx-n]) {
-            uf.union(idx, idx-n);
+        if (idx >= n) {
+            if (isOpen[idx-n])
+                uf.union(idx, idx-n);
         }
-        if (idx < isOpen.length-n && isOpen[idx+n]) {
-            uf.union(idx, idx+n);
+        else {
+            uf.union(idx, upper);
         }
+
+        if (idx < isOpen.length-n) {
+            if (isOpen[idx+n])
+                uf.union(idx, idx+n);
+        } else {
+            uf.union(idx, lower);
+        }
+
         if (idx > 0 && isOpen[idx-1]) {
             uf.union(idx, idx-1);
         }
@@ -92,5 +97,4 @@ public class Percolation {
         Percolation p = new Percolation(Integer.parseInt(args[1]));
         assert !p.percolates();
     }
-    
 }

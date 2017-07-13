@@ -12,20 +12,26 @@ import static org.junit.Assert.*;
  * @author sakhnik
  */
 public class PercolationTest {
-	
-	@Test
-	public void testPercolation3() {
-		Percolation p = new Percolation(3);
-		assertFalse(p.percolates());
-		assertFalse(p.isOpen(1, 1));
-		p.open(1, 1);
-		p.open(2, 2);
-		p.open(3, 3);
-		assertFalse(p.percolates());
-		p.open(1, 2);
-		assertFalse(p.percolates());
-		p.open(2, 3);
-		assertTrue(p.percolates());
-		assertEquals(5, p.numberOfOpenSites());
-	}
+
+    @Test
+    public void testConsistencyBeforeOpening() {
+        Percolation p = new Percolation(3);
+        assertFalse(p.isOpen(1, 1));
+        assertFalse(p.isFull(1, 1));
+    }
+
+    @Test
+    public void testPercolation3() {
+        Percolation p = new Percolation(3);
+        assertFalse(p.percolates());
+        p.open(1, 1);
+        p.open(2, 2);
+        p.open(3, 3);
+        assertFalse(p.percolates());
+        p.open(1, 2);
+        assertFalse(p.percolates());
+        p.open(2, 3);
+        assertTrue(p.percolates());
+        assertEquals(5, p.numberOfOpenSites());
+    }
 }
