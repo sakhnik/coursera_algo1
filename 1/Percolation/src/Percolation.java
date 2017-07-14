@@ -14,26 +14,23 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
  */
 public class Percolation {
 
-    private final int n;
-    private final int upper, lower;
-    private byte[] site;
     private static final byte OPEN_FLAG = 1;
-    private static final byte HAS_TOP = 2;
-    private static final byte HAS_BOTTOM = 4;
+    private static final byte TOP_FLAG = 2;
+    private static final byte BOTTOM_FLAG = 4;
+
+    private final int n;
+    private byte[] site;
     private int nOpen;
     private final WeightedQuickUnionUF uf;
+    private boolean percolates = false;
 
     public Percolation(int n) {               // create n-by-n grid, with all sites blocked
         if (n <= 0)
             throw new IllegalArgumentException();
         this.n = n;
-        upper = n*n;
-        lower = upper + 1;
         nOpen = 0;
-
         site = new byte[n*n];
-
-        uf = new WeightedQuickUnionUF(n*n + 2);
+        uf = new WeightedQuickUnionUF(n*n);
     }
 
     private int getIdx(int row, int col) {
@@ -51,6 +48,16 @@ public class Percolation {
         site[idx] |= OPEN_FLAG;
     }
 
+    private void join(int idx1, int idx2) {
+        byte s1 = site[uf.find(idx1)];
+        byte s2 = site[uf.find(idx2)];
+        uf.union(idx1, idx2);
+        int r = uf.find(idx1);
+        site[r] |= s1 | s2;
+        if ((site[r] & (TOP_FLAG | BOTTOM_FLAG)) == (TOP_FLAG | BOTTOM_FLAG))
+            percolates = true;
+    }
+
     public    void open(int row, int col) {    // open site (row, col) if it is not open already
         int idx = getIdx(row, col);
 
@@ -61,26 +68,30 @@ public class Percolation {
 
         if (row > 1) {
             if (isOpen(idx-n)) {
-                uf.union(idx, idx-n);
+                join(idx, idx-n);
             }
         }
         else {
-            uf.union(idx, upper);
+            site[uf.find(idx)] |= TOP_FLAG;
+            if ((site[uf.find(idx)] & BOTTOM_FLAG) != 0)
+                percolates = true;
         }
 
         if (row < n) {
             if (isOpen(idx+n)) {
-                uf.union(idx, idx+n);
+                join(idx, idx+n);
             }
         } else {
-            uf.union(idx, lower);
+            site[uf.find(idx)] |= BOTTOM_FLAG;
+            if ((site[uf.find(idx)] & TOP_FLAG) != 0)
+                percolates = true;
         }
 
         if (col > 1 && isOpen(idx-1)) {
-            uf.union(idx, idx-1);
+            join(idx, idx-1);
         }
         if (col < n && isOpen(idx+1)) {
-            uf.union(idx, idx+1);
+            join(idx, idx+1);
         }
     }
 
@@ -89,7 +100,7 @@ public class Percolation {
     }
 
     public boolean isFull(int row, int col) {  // is site (row, col) full?
-        return uf.connected(getIdx(row, col), upper);
+        return 0 != (site[uf.find(getIdx(row, col))] & TOP_FLAG);
     }
 
     public     int numberOfOpenSites() {      // number of open sites
@@ -97,7 +108,7 @@ public class Percolation {
     }
 
     public boolean percolates() {              // does the system percolate?
-        return uf.connected(upper, lower);
+        return percolates;
     }
 
 
