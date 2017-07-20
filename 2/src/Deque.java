@@ -1,5 +1,6 @@
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -40,6 +41,9 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     public void addLast(Item item) {           // add the item to the end
+        if (item == null)
+            throw new IllegalArgumentException();
+
         N n = new N();
         n.v = item;
 
@@ -60,6 +64,9 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     public Item removeLast() {                 // remove and return the item from the end
+        if (size == 0)
+            throw new NoSuchElementException();
+
         N last = root.prev;
         --size;
 
@@ -91,12 +98,18 @@ public class Deque<Item> implements Iterable<Item> {
 
         @Override
         public Item next() {
+            if (i == size)
+                throw new NoSuchElementException();
             Item v = cur.v;
             ++i;
             cur = cur.next;
             return v;
         }
 
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     };
 
     @Override
