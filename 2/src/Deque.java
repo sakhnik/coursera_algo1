@@ -14,14 +14,14 @@ import java.util.NoSuchElementException;
  */
 public class Deque<Item> implements Iterable<Item> {
 
-    private class N {
-        Item v;
-        N prev;
-        N next;
-    }
-
     private N root = null;
     private int size = 0;
+
+    private class N {
+        private Item v;
+        private N prev;
+        private N next;
+    }
 
     public Deque() {                           // construct an empty deque
 
@@ -48,7 +48,9 @@ public class Deque<Item> implements Iterable<Item> {
         n.v = item;
 
         if (root == null) {
-            root = n.next = n.prev = n;
+            root = n;
+            n.next = n;
+            n.prev = n;
         } else {
             n.next = root;
             n.prev = root.prev;
@@ -59,6 +61,9 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     public Item removeFirst() {                // remove and return the item from the front
+        if (size == 0)
+            throw new NoSuchElementException();
+
         root = root.next;
         return removeLast();
     }

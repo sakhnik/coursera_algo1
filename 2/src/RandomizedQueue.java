@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
-    private Item[] items = (Item[]) new Object[8];
+    private Item[] items = (Item[]) new Object[1];
     private int size = 0;
 
     public RandomizedQueue() {                 // construct an empty randomized queue
@@ -31,7 +31,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private void resize(int capacity) {
         Object[] copy = new Object[capacity];
-        for (int i = 0; i < capacity; ++i)
+        for (int i = 0; i < size; ++i)
             copy[i] = items[i];
         items = (Item[]) copy;
     }
@@ -75,8 +75,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private class ShuffleIterator<Item> implements Iterator<Item> {
 
-        private Item[] items;
-        int cur = 0;
+        private final Item[] items;
+        private int cur = 0;
 
         public ShuffleIterator(Item[] items, int size) {
             this.items = (Item[]) new Object[size];
