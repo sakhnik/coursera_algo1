@@ -100,21 +100,6 @@ public class Point implements Comparable<Point> {
             double s1 = p0.slopeTo(p1);
             double s2 = p0.slopeTo(p2);
 
-            if (s1 == Double.NEGATIVE_INFINITY) {
-                // Let's assume degenerate slope is equal to any other slope
-                return 0;
-            }
-
-            if (s1 == Double.POSITIVE_INFINITY) {
-                if (s2 == Double.POSITIVE_INFINITY || s2 == Double.NEGATIVE_INFINITY)
-                    return 0;
-                if (s2 > Double.MIN_VALUE)
-                    return -1;
-                if (s2 < -Double.MIN_VALUE)
-                    return 1;
-                return 0;
-            }
-
             return Double.compare(s1, s2);
         }
 
