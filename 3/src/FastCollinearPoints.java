@@ -16,18 +16,23 @@ import java.util.Arrays;
  * @author sakhnik
  */
 public class FastCollinearPoints {
-    private final ArrayList<LineSegment> segments = new ArrayList<>();
     private final Point[] sortBuffer;
+    private final ArrayList<Point> first = new ArrayList<>();
+    private final ArrayList<Point> last = new ArrayList<>();
+    private final ArrayList<LineSegment> segments = new ArrayList<>();
 
     public FastCollinearPoints(Point[] points) {     // finds all line segments containing 4 or more points
         if (points == null)
             throw new IllegalArgumentException();
-        sortBuffer = new Point[points.length];
-
-        Point[] field = points.clone();
-        for (Point origin : points) {
-            if (origin == null)
+        for (Point p : points) {
+            if (p == null)
                 throw new IllegalArgumentException();
+        }
+
+        sortBuffer = new Point[points.length];
+        Point[] field = points.clone();
+
+        for (Point origin : points) {
 
             Arrays.sort(field, origin.slopeOrder());
             assert origin == field[0];
@@ -49,6 +54,10 @@ public class FastCollinearPoints {
                 addSegment(origin, field, start, field.length);
             }
         }
+
+        for (int i = 0; i < first.size(); ++i) {
+            segments.add(new LineSegment(first.get(i), last.get(i)));
+        }
     }
     
     private void addSegment(Point origin, Point[] field, int start, int end) {
@@ -58,12 +67,14 @@ public class FastCollinearPoints {
             sortBuffer[i++] = field[start++];
         }
         Arrays.sort(sortBuffer, 0, i);
-        LineSegment segment = new LineSegment(sortBuffer[0], sortBuffer[i-1]);
-        String ss = segment.toString();
-        for (LineSegment s : segments)
-            if (ss.equals(s.toString()))
+        Point p = sortBuffer[0];
+        Point q = sortBuffer[i-1];
+        for (int j = 0; j < first.size(); ++j) {
+            if (p.compareTo(first.get(j)) == 0 && q.compareTo(last.get(j)) == 0)
                 return;
-        segments.add(segment);
+        }
+        first.add(p);
+        last.add(q);
     }
 
     public           int numberOfSegments() {        // the number of line segments
