@@ -31,7 +31,7 @@ public class FastCollinearPoints {
 
             Arrays.sort(field, origin.slopeOrder());
             assert origin == field[0];
-            if (origin.equals(field[1]))
+            if (field.length > 1 && origin.equals(field[1]))
                 throw new IllegalArgumentException();
 
             int start = 0;
