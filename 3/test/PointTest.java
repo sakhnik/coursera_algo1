@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 
-import java.util.Comparator;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,5 +33,9 @@ public class PointTest {
 
     @Test
     public void testSlopeOrder() {
+        Point p = new Point(3,0);
+        Point q = new Point(8,0);
+        Point r = new Point(0,0);
+        assertEquals(0, p.slopeOrder().compare(q, r));
     }
 }

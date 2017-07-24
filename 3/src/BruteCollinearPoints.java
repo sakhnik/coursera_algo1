@@ -27,21 +27,21 @@ public class BruteCollinearPoints {
                 throw new IllegalArgumentException();
         Arrays.sort(points);
  
-        for (int i = 0, in = points.length - 3; i < in; ++i) {
-            Point pi = points[i];
-            for (int j = i+1, jn = points.length - 2; j < jn; ++j) {
-                Point pj = points[j];
+        for (int i1 = 0, in = points.length - 3; i1 < in; ++i1) {
+            Point pi = points[i1];
+            for (int i2 = i1+1, jn = points.length - 2; i2 < jn; ++i2) {
+                Point pj = points[i2];
                 double sj = pi.slopeTo(pj);
 
-                for (int k = j+1, kn = points.length - 1; k < kn; ++k) {
-                    Point pk = points[k];
+                for (int i3 = i2+1, kn = points.length - 1; i3 < kn; ++i3) {
+                    Point pk = points[i3];
                     double sk = pi.slopeTo(pk);
                     if (Double.compare(sj, sk) != 0)
                         continue;
 
 
-                    for (int l = k+1; l < points.length; ++l) {
-                        Point pl = points[l];
+                    for (int i4 = i3+1; i4 < points.length; ++i4) {
+                        Point pl = points[i4];
                         if (pi.equals(pl))
                             throw new IllegalArgumentException();
                         double sl = pi.slopeTo(pl);

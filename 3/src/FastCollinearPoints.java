@@ -37,7 +37,7 @@ public class FastCollinearPoints {
             int start = 0;
             double slope = Double.NEGATIVE_INFINITY;
             for (int i = 1; i < field.length; ++i) {
-                if (slope == origin.slopeTo(field[i]))
+                if (Double.compare(slope, origin.slopeTo(field[i])) == 0)
                     continue;
                 if (i - start > 2) {
                     addSegment(origin, field, start, i);
