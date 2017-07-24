@@ -22,9 +22,16 @@ public class BruteCollinearPoints {
     public BruteCollinearPoints(Point[] points) {    // finds all line segments containing 4 points
         if (points == null)
             throw new IllegalArgumentException();
+
         for (Point p : points)
             if (p == null)
                 throw new IllegalArgumentException();
+
+        for (int i = 0, in = points.length-1; i < in; ++i) {
+            for (int j = i+1; j < points.length; ++j)
+                if (points[i].equals(points[j]))
+                    throw new IllegalArgumentException();
+        }
 
         Point[] field = points.clone();
         Arrays.sort(field);
@@ -33,8 +40,6 @@ public class BruteCollinearPoints {
             Point p1 = field[i1];
             for (int i2 = i1+1, jn = field.length - 2; i2 < jn; ++i2) {
                 Point p2 = field[i2];
-                if (p1.equals(p2))
-                    throw new IllegalArgumentException();
                 double s2 = p1.slopeTo(p2);
 
                 for (int i3 = i2+1, kn = field.length - 1; i3 < kn; ++i3) {
