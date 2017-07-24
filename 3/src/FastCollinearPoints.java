@@ -16,7 +16,6 @@ import java.util.Arrays;
  * @author sakhnik
  */
 public class FastCollinearPoints {
-    private final Point[] sortBuffer;
     private final ArrayList<LineSegment> segments = new ArrayList<>();
 
     public FastCollinearPoints(Point[] points) {     // finds all line segments containing 4 or more points
@@ -27,7 +26,6 @@ public class FastCollinearPoints {
                 throw new IllegalArgumentException();
         }
 
-        sortBuffer = new Point[points.length];
         Point[] field = points.clone();
 
         for (Point origin : points) {
@@ -37,6 +35,7 @@ public class FastCollinearPoints {
             if (field.length > 1 && origin.equals(field[1]))
                 throw new IllegalArgumentException();
 
+            // Check for equal adjacent groups
             int start = 0;
             double slope = Double.NEGATIVE_INFINITY;
             for (int i = 1; i < field.length; ++i) {
@@ -55,17 +54,17 @@ public class FastCollinearPoints {
     }
     
     private void addSegment(Point origin, Point[] field, int start, int end) {
-        sortBuffer[0] = origin;
-        int i = 1;
+        Point maxP = origin;
         while (start != end) {
-            sortBuffer[i++] = field[start++];
+            Point p = field[start++];
+            // Avoid duplicates (if segment doesn't start from the lowest point)
+            if (p.compareTo(origin) < 0)
+                return;
+            if (p.compareTo(maxP) > 0)
+                maxP = p;
         }
-        Arrays.sort(sortBuffer, 0, i);
-        // Avoid duplicates
-        if (sortBuffer[0] != origin)
-            return;
 
-        segments.add(new LineSegment(origin, sortBuffer[i-1]));
+        segments.add(new LineSegment(origin, maxP));
     }
 
     public           int numberOfSegments() {        // the number of line segments
