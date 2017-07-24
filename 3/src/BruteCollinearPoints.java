@@ -25,28 +25,30 @@ public class BruteCollinearPoints {
         for (Point p : points)
             if (p == null)
                 throw new IllegalArgumentException();
-        Arrays.sort(points);
- 
-        for (int i1 = 0, in = points.length - 3; i1 < in; ++i1) {
-            Point pi = points[i1];
-            for (int i2 = i1+1, jn = points.length - 2; i2 < jn; ++i2) {
-                Point pj = points[i2];
-                double sj = pi.slopeTo(pj);
 
-                for (int i3 = i2+1, kn = points.length - 1; i3 < kn; ++i3) {
-                    Point pk = points[i3];
-                    double sk = pi.slopeTo(pk);
-                    if (Double.compare(sj, sk) != 0)
+        Point[] field = points.clone();
+        Arrays.sort(field);
+ 
+        for (int i1 = 0, in = field.length - 3; i1 < in; ++i1) {
+            Point p1 = field[i1];
+            for (int i2 = i1+1, jn = field.length - 2; i2 < jn; ++i2) {
+                Point p2 = field[i2];
+                if (p1.equals(p2))
+                    throw new IllegalArgumentException();
+                double s2 = p1.slopeTo(p2);
+
+                for (int i3 = i2+1, kn = field.length - 1; i3 < kn; ++i3) {
+                    Point p3 = field[i3];
+                    double s3 = p1.slopeTo(p3);
+                    if (Double.compare(s2, s3) != 0)
                         continue;
 
 
-                    for (int i4 = i3+1; i4 < points.length; ++i4) {
-                        Point pl = points[i4];
-                        if (pi.equals(pl))
-                            throw new IllegalArgumentException();
-                        double sl = pi.slopeTo(pl);
-                        if (Double.compare(sj, sl) == 0) {
-                            segments.add(new LineSegment(pi, pl));
+                    for (int i4 = i3+1; i4 < field.length; ++i4) {
+                        Point p4 = field[i4];
+                        double s4 = p1.slopeTo(p4);
+                        if (Double.compare(s2, s4) == 0) {
+                            segments.add(new LineSegment(p1, p4));
                         }
                     }
                 }
