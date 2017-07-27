@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -21,5 +22,16 @@ public class BoardTest {
 
         Board b = new Board(blocks);
         Iterable<Board> neighbors = b.neighbors();
+    }
+
+    @Test
+    public void testTwin() {
+        int[][] blocks = {{0,1},{2,3}};
+        Board b = new Board(blocks);
+        Board b2 = b.twin();
+
+        int[][] refBlocks = {{0,2},{1,3}};
+        Board ref = new Board(refBlocks);
+        assertTrue(ref.equals(b2));
     }
 }

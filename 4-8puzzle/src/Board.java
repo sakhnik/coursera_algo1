@@ -82,19 +82,30 @@ public class Board {
     public Board twin() {                    // a board that is obtained by exchanging any pair of blocks
         int[][] b = cloneBlocks(blocks);
 
-        // Find two non-empty blocks in the first row
-        int i1 = 0;
-        while (blocks[0][i1] == 0)
-            ++i1;
-        int i2 = i1+1;
-        while (blocks[0][i2] == 0)
-            ++i2;
+        // Find two non-empty blocks
+        int r1 = 0;
+        int c1 = 0;
+        int stage = 0;
 
-        // Exchange them
-        swap(b, 0, i1, 0, i2);
+        for (int row = 0; row < blocks.length; ++row)
+            for (int col = 0; col < blocks.length; ++col) {
+                if (blocks[row][col] != 0) {
+                    if (stage == 0) {
+                        r1 = row;
+                        c1 = col;
+                        ++stage;
+                        continue;
+                    }
 
-        // Construct a new board
-        return new Board(false, b);
+                    // Exchange them
+                    swap(b, r1, c1, row, col);
+
+                    // Construct a new board
+                    return new Board(false, b);
+                }
+            }
+
+        return null;
     }
 
     @Override
