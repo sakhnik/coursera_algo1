@@ -114,42 +114,41 @@ public class Board {
     }
 
     public Iterable<Board> neighbors() {     // all neighboring boards
-        int row = 0;
-        int col = 0;
+        for (int row = 0; row < blocks.length; ++row)
+            for (int col = 0; col < blocks.length; ++col)
+                if (0 == blocks[row][col]) {
+                    ArrayList<Board> neighbors = new ArrayList<>();
+                    neighbors.ensureCapacity(4);
 
-        for (; row < blocks.length; ++row)
-            for (; col < blocks.length; ++col)
-                if (0 == blocks[row][col])
-                    break;
+                    if (row > 0) {
+                        int[][] b = cloneBlocks(blocks);
+                        swap(b, row, col, row - 1, col);
+                        neighbors.add(new Board(false, b));
+                    }
 
-        ArrayList<Board> neighbors = new ArrayList<>();
-        neighbors.ensureCapacity(4);
+                    if (col > 0) {
+                        int[][] b = cloneBlocks(blocks);
+                        swap(b, row, col, row, col - 1);
+                        neighbors.add(new Board(false, b));
+                    }
 
-        if (row > 0) {
-            int[][] b = cloneBlocks(blocks);
-            swap(b, row, col, row - 1, col);
-            neighbors.add(new Board(false, b));
-        }
+                    if (row + 1 < blocks.length) {
+                        int[][] b = cloneBlocks(blocks);
+                        swap(b, row, col, row + 1, col);
+                        neighbors.add(new Board(false, b));
+                    }
 
-        if (col > 0) {
-            int[][] b = cloneBlocks(blocks);
-            swap(b, row, col, row, col - 1);
-            neighbors.add(new Board(false, b));
-        }
+                    if (col + 1 < blocks.length) {
+                        int[][] b = cloneBlocks(blocks);
+                        swap(b, row, col, row, col + 1);
+                        neighbors.add(new Board(false, b));
+                    }
 
-        if (row + 1 < blocks.length) {
-            int[][] b = cloneBlocks(blocks);
-            swap(b, row, col, row + 1, col);
-            neighbors.add(new Board(false, b));
-        }
+                    return neighbors;
+                }
 
-        if (col + 1 < blocks.length) {
-            int[][] b = cloneBlocks(blocks);
-            swap(b, row, col, row, col + 1);
-            neighbors.add(new Board(false, b));
-        }
-
-        return neighbors;
+        assert false;
+        return null;
     }
 
     @Override
