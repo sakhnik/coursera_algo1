@@ -51,25 +51,6 @@ public class Solver {
         }
     }
 
-    private Node runOneSearch(MinPQ<Node> pq) {
-        Node cur = pq.delMin();
-        Board curBoard = cur.getBoard();
-        if (curBoard.isGoal()) {
-            return cur;
-        }
-
-        Board prevBoard = null;
-        if (cur.prev != null)
-            prevBoard = cur.prev.getBoard();
-
-        for (Board b : curBoard.neighbors()) {
-            // Critical optimization: don't enqueue the previous board
-            if (!b.equals(prevBoard))
-                pq.insert(new Node(b, cur));
-        }
-        return null;
-    }
-
     public Solver(Board initial) {           // find a solution to the initial board (using the A* algorithm)
 
         if (initial == null)
@@ -97,6 +78,25 @@ public class Solver {
                 return;
             }
         }
+    }
+
+    private Node runOneSearch(MinPQ<Node> pq) {
+        Node cur = pq.delMin();
+        Board curBoard = cur.getBoard();
+        if (curBoard.isGoal()) {
+            return cur;
+        }
+
+        Board prevBoard = null;
+        if (cur.prev != null)
+            prevBoard = cur.prev.getBoard();
+
+        for (Board b : curBoard.neighbors()) {
+            // Critical optimization: don't enqueue the previous board
+            if (!b.equals(prevBoard))
+                pq.insert(new Node(b, cur));
+        }
+        return null;
     }
 
     public boolean isSolvable() {            // is the initial board solvable?

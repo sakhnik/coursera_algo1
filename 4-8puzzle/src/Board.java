@@ -32,7 +32,7 @@ public class Board {
 
     public int hamming() {                   // number of blocks out of place
         int count = 0;
-        int n = 0;
+        int n = 1;
         for (int row = 0; row < blocks.length; ++row)
             for (int col = 0; col < blocks.length; ++col, ++n)
                 if (blocks[row][col] != n)
@@ -57,7 +57,7 @@ public class Board {
     }
 
     public boolean isGoal() {                // is this board the goal board?
-        int n = 0;
+        int n = 1;
         for (int row = 0; row < blocks.length; ++row)
             for (int col = 0; col < blocks.length; ++col, ++n)
                 if (blocks[row][col] != n && n != blocks.length*blocks.length)
