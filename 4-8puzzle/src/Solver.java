@@ -65,7 +65,6 @@ public class Solver {
             Node n = runOneSearch(pq);
             if (n != null) {
                 solution = new LinkedList<>();
-                n = n.getPrev(); // Skip the goal node
                 while (n != null) {
                     solution.addFirst(n.getBoard());
                     n = n.getPrev();
@@ -105,7 +104,9 @@ public class Solver {
     }
 
     public int moves() {                     // min number of moves to solve initial board; -1 if unsolvable
-        return solution.size();
+        if (solution == null)
+            return -1;
+        return solution.size() - 1;
     }
 
     public Iterable<Board> solution() {      // sequence of boards in a shortest solution; null if unsolvable
