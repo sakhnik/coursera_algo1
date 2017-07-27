@@ -34,8 +34,8 @@ public class Board {
         int count = 0;
         int n = 0;
         for (int row = 0; row < blocks.length; ++row)
-            for (int col = 0; col < blocks.length; ++col)
-                if (blocks[row][col] != ++n)
+            for (int col = 0; col < blocks.length; ++col, ++n)
+                if (blocks[row][col] != n)
                     ++count;
         return count-1;  // empty is depicted with 0, not m*n
     }
@@ -59,8 +59,8 @@ public class Board {
     public boolean isGoal() {                // is this board the goal board?
         int n = 0;
         for (int row = 0; row < blocks.length; ++row)
-            for (int col = 0; col < blocks.length; ++col)
-                if (blocks[row][col] != ++n && n != blocks.length*blocks.length)
+            for (int col = 0; col < blocks.length; ++col, ++n)
+                if (blocks[row][col] != n && n != blocks.length*blocks.length)
                     return false;
         return true;
     }
@@ -155,6 +155,8 @@ public class Board {
     @Override
     public String toString() {               // string representation of this board (in the output format specified below)
         StringBuilder b = new StringBuilder();
+        b.append(blocks.length);
+        b.append('\n');
         for (int row = 0; row < blocks.length; ++row) {
             for (int col = 0; col < blocks.length; ++col) {
                 b.append(' ');

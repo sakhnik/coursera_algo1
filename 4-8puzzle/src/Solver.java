@@ -1,6 +1,5 @@
 
 import edu.princeton.cs.algs4.MinPQ;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /*
@@ -15,11 +14,13 @@ import java.util.LinkedList;
  */
 public class Solver {
 
+    private final LinkedList<Board> solution;
+
     private class Node implements Comparable<Node> {
-        final private Board board;
-        final private int moves;
-        final private Node prev;
-        final private int prio;
+        private final Board board;
+        private final int moves;
+        private final Node prev;
+        private final int prio;
 
         Node(Board b, Node p) {
             board = b;
@@ -50,33 +51,23 @@ public class Solver {
         }
     }
 
-    private final LinkedList<Board> solution;
-
-    private class Searcher {
-        private MinPQ<Node> pq;
-
-        Searcher(Board initial) {
-            pq.insert(new Node(initial, null));
+    private Node runOneSearch(MinPQ<Node> pq) {
+        Node cur = pq.delMin();
+        Board curBoard = cur.getBoard();
+        if (curBoard.isGoal()) {
+            return cur;
         }
 
-        Node runOne() {
-            Node cur = pq.delMin();
-            Board curBoard = cur.getBoard();
-            if (curBoard.isGoal()) {
-                return cur;
-            }
+        Board prevBoard = null;
+        if (cur.prev != null)
+            prevBoard = cur.prev.getBoard();
 
-            Board prevBoard = null;
-            if (cur.prev != null)
-                prevBoard = cur.prev.getBoard();
-
-            for (Board b : curBoard.neighbors()) {
-                // Critical optimization: don't enqueue the previous board
-                if (!b.equals(prevBoard))
-                    pq.insert(new Node(b, cur));
-            }
-            return null;
+        for (Board b : curBoard.neighbors()) {
+            // Critical optimization: don't enqueue the previous board
+            if (!b.equals(prevBoard))
+                pq.insert(new Node(b, cur));
         }
+        return null;
     }
 
     public Solver(Board initial) {           // find a solution to the initial board (using the A* algorithm)
@@ -84,11 +75,13 @@ public class Solver {
         if (initial == null)
             throw new IllegalArgumentException();
 
-        Searcher s = new Searcher(initial);
-        Searcher s2 = new Searcher(initial.twin());
+        MinPQ<Node> pq = new MinPQ<>();
+        pq.insert(new Node(initial, null));
+        MinPQ<Node> pq2 = new MinPQ<>();
+        pq2.insert(new Node(initial.twin(), null));
 
         while (true) {
-            Node n = s.runOne();
+            Node n = runOneSearch(pq);
             if (n != null) {
                 solution = new LinkedList<>();
                 while (n != null) {
@@ -98,7 +91,7 @@ public class Solver {
                 return;
             }
 
-            n = s2.runOne();
+            n = runOneSearch(pq2);
             if (n != null) {
                 solution = null;
                 return;
