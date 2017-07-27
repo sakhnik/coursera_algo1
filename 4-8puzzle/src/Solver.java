@@ -16,7 +16,7 @@ public class Solver {
 
     private final LinkedList<Board> solution;
 
-    private class Node implements Comparable<Node> {
+    private static class Node implements Comparable<Node> {
         private final Board board;
         private final int moves;
         private final Node prev;
@@ -80,7 +80,7 @@ public class Solver {
         }
     }
 
-    private Node runOneSearch(MinPQ<Node> pq) {
+    private static Node runOneSearch(MinPQ<Node> pq) {
         Node cur = pq.delMin();
         Board curBoard = cur.getBoard();
         if (curBoard.isGoal()) {
