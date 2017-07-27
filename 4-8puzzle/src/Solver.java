@@ -65,9 +65,10 @@ public class Solver {
             Node n = runOneSearch(pq);
             if (n != null) {
                 solution = new LinkedList<>();
+                n = n.getPrev(); // Skip the goal node
                 while (n != null) {
                     solution.addFirst(n.getBoard());
-                    n = n.prev;
+                    n = n.getPrev();
                 }
                 return;
             }
