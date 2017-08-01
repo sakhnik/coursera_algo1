@@ -99,7 +99,7 @@ public class KdTree {
         if (p == null)
             throw new IllegalArgumentException();
         Node n = root;
-        while (n != null) {
+        while (n.point != null) {
             if (n.isEqual(p))
                 return true;
             n = n.isLeft(p) ? n.left : n.right;
@@ -119,7 +119,7 @@ public class KdTree {
     }
     
     private void range(Node node, RectHV rect) {
-        if (node.rect.intersects(rect))
+        if (!node.rect.intersects(rect))
             return;
         if (node.point == null)
             return;
