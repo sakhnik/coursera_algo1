@@ -19,11 +19,18 @@ public class KdTree {
     private final Node root;
     private int size;
 
-    class Node {
-        Point2D p;          // the splitting point, null if the rectange hasn't been split yet
-        RectHV rect;        // enclosing rectangle of the node
-        boolean isVert;     // is the split vertical (by x)?
-        Node left, right;   // the halves if the node was split
+    // Accumulator of range of points
+    private List<Point2D> range;
+
+    // Accumulators to look for closest point
+    private double minD;
+    private Point2D minP;
+
+    private static class Node {
+        private Point2D point;          // the splitting point, null if the rectange hasn't been split yet
+        private final RectHV rect;        // enclosing rectangle of the node
+        private final boolean isVert;     // is the split vertical (by x)?
+        private Node left, right;   // the halves if the node was split
 
         Node(boolean v, RectHV r) {
             isVert = v;
@@ -32,43 +39,40 @@ public class KdTree {
 
         // split the node by the given point
         void split(Point2D p) {
-            assert this.p == null;
+            assert point == null;
             assert rect.contains(p);
 
-            this.p = p;
-            RectHV l, r;
+            point = p;
             if (isVert) {
-                l = new RectHV(rect.xmin(), rect.ymin(), p.x(), rect.ymax());
-                r = new RectHV(p.x(), rect.ymin(), rect.xmax(), rect.ymax());
+                left = new Node(false, new RectHV(rect.xmin(), rect.ymin(), p.x(), rect.ymax()));
+                right = new Node(false, new RectHV(p.x(), rect.ymin(), rect.xmax(), rect.ymax()));
             } else {
-                l = new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), p.y());
-                r = new RectHV(rect.xmin(), p.y(), rect.xmax(), rect.ymax());
+                left = new Node(true, new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), p.y()));
+                right = new Node(true, new RectHV(rect.xmin(), p.y(), rect.xmax(), rect.ymax()));
             }
-            left = new Node(!isVert, l);
-            right = new Node(!isVert, r);
         }
 
         // Is given point in the left subtree?
         boolean isLeft(Point2D p) {
             if (isVert) {
-                return 0 > Double.compare(p.y(), this.p.y());
+                return 0 > Double.compare(p.x(), point.x());
             }
-            return 0 > Double.compare(p.x(), this.p.x());
+            return 0 > Double.compare(p.y(), point.y());
         }
 
         // Is splitting point equal to the given one?
         boolean isEqual(Point2D p) {
-            return p.equals(this.p);
+            return p.equals(point);
         }
     }
 
     public KdTree() {                              // construct an empty set of points
-        root = new Node(true, new RectHV(0,0,1,1));
+        root = new Node(true, new RectHV(0, 0, 1, 1));
         size = 0;
     }
     
     public boolean isEmpty() {                      // is the set empty?
-        return root.p == null;
+        return root.point == null;
     }
     
     public int size() {                         // number of points in the set
@@ -80,7 +84,7 @@ public class KdTree {
             throw new IllegalArgumentException();
 
         Node n = root;
-        while (n.p != null) {
+        while (n.point != null) {
             if (n.isEqual(p))
                 return; // Such point exists already
 
@@ -104,7 +108,7 @@ public class KdTree {
     }
     
     private void draw(Node n) {
-        n.p.draw();
+        n.point.draw();
         if (n.left != null)  draw(n.left);
         if (n.right != null)  draw(n.right);
     }
@@ -114,36 +118,36 @@ public class KdTree {
             draw(root);
     }
     
-    private void range(Node node, RectHV rect, List<Point2D> res) {
+    private void range(Node node, RectHV rect) {
         if (node.rect.intersects(rect))
             return;
-        if (node.p == null)
+        if (node.point == null)
             return;
-        if (rect.contains(node.p))
-            res.add(node.p);
-        range(node.left, rect, res);
-        range(node.right, rect, res);
+        if (rect.contains(node.point))
+            range.add(node.point);
+        range(node.left, rect);
+        range(node.right, rect);
     }
 
     public Iterable<Point2D> range(RectHV rect) {             // all points that are inside the rectangle (or on the boundary)
         if (rect == null)
             throw new IllegalArgumentException();
 
-        List<Point2D> res = new ArrayList<>();
-        range(root, rect, res);
-        return res;
+        range = new ArrayList<>();
+        range(root, rect);
+        return range;
     }
-    
-    private void nearest(Node node, Point2D p, Double minD, Point2D minP) {
+ 
+    private void nearest(Node node, Point2D p) {
         // If no point in the node, nothing to search here
-        if (node.p == null)
+        if (node.point == null)
             return;
         // We'll be operating squared distances to avoid computation of square roots
-        double d = p.distanceSquaredTo(node.p);
+        double d = p.distanceSquaredTo(node.point);
         // If the point is closer than known so far, update the result
         if (d < minD) {
             minD = d;
-            minP = node.p;
+            minP = node.point;
         }
 
         // Distances to subrectangles
@@ -152,20 +156,20 @@ public class KdTree {
 
         // Choose the closer one first, and prune the farther one.
         if (dl < dr) {
-            if (dl < minD) nearest(node.left, p, minD, minP);
-            if (dr < minD) nearest(node.right, p, minD, minP);
+            if (dl < minD) nearest(node.left, p);
+            if (dr < minD) nearest(node.right, p);
         } else {
-            if (dr < minD) nearest(node.right, p, minD, minP);
-            if (dl < minD) nearest(node.left, p, minD, minP);
+            if (dr < minD) nearest(node.right, p);
+            if (dl < minD) nearest(node.left, p);
         }
     }
 
     public Point2D nearest(Point2D p) {             // a nearest neighbor in the set to point p; null if the set is empty
         if (p == null)
             throw new IllegalArgumentException();
-        Double minD = Double.POSITIVE_INFINITY;
-        Point2D minP = null;
-        nearest(root, p, minD, minP);
+        minD = Double.POSITIVE_INFINITY;
+        minP = null;
+        nearest(root, p);
         return minP;
     }
     
